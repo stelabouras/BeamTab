@@ -2,14 +2,15 @@
    "author": "Evil Window Dog",
    "background": {
       "persistent": true,
-      "scripts": [ "js/pubnub.js", "js/events.js" ]
+      "scripts": [ "js/events.js" ]
    },
    "browser_action": {
       "default_icon": {
          "19": "icons/icon-19.png",
          "38": "icons/icon-76.png"
       },
-      "default_title": "BeamTab"
+      "default_title": "BeamTab",
+      "default_popup": "html/popup.html"
    },
    "description": "BeamTab extension for Google Chrome",
    "homepage_url": "http://evilwindowdog.com",
@@ -19,6 +20,11 @@
    "key": "MIIBIjANBgkqhkiG9w0BAQEFAAOCAQ8AMIIBCgKCAQEA0fcMIF+N/2Yc5DBSMDyLQ5uWJ/Lsv3w7nwHhALmi133NdR+JTONe81MTtnKfcQEebYmOYNAgpBFe1Kd/DGxK3kc8HMChiXO5RHE7Y/E1EBytQ/eqZyLwT2bk5J0ohpXt73aPvou1/pcfg7t8zEpsqLVLdxX4OE0z+nZffUGNEzJWu90OIK6fZVoBV10uRjJe0jg5DwIRZoXjYnwBaGkQvEPIlfeiv19/x8nukAo0FXB06mBEOvj3TzmO9dBjZI4y6ls2S7Sn5qzTr0Cp67PdAJ4nWYg393d2AlSVOV4T2fyuI57bsbHO00HMRkUaZ4+fzal4SNH/8Lloc0zQrW8oDQIDAQAB",
    "manifest_version": 2,
    "name": "BeamTab",
-   "permissions": [ "tabs", "storage", "http://*/*", "https://*/*" ],
+   "permissions": [ "contextMenus", "tabs", "storage", "http://*/*", "https://*/*" ],
+   "content_scripts": [
+   {
+      "matches": ["http://*/*", "https://*/*"],
+      "js": ["js/extractor.js"]
+    }],
    "version": "0.1"
 }

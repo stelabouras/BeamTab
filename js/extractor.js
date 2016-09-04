@@ -1,10 +1,45 @@
-if(!window.extractor) {
+if(!window.beamExtractor) {
 
     (function() {
 
-      var Extractor = {
+      var BeamExtractor = {
 
-        extract : function() {
+        'counter' : 0,
+        'counterInterval' : undefined,
+
+        initialize : function() {
+
+            var self = this;
+
+            self.setupCounter();
+
+            document.addEventListener('visibilitychange', function() {
+
+                self.setupCounter();
+
+            }, false);
+        },
+
+        setupCounter : function() {
+
+            if(document.hidden) {
+
+                if(this.counterInterval !== undefined)
+                    clearInterval(this.counterInterval);
+
+                this.counter = 0;
+
+            } else {
+
+                var self = this;
+
+                this.counterInterval = setInterval(function() { 
+                    self.counter++; 
+                }, 1000);
+            }
+        },
+
+        extract : function(payload) {
 
             var url = document.location.href;
 
@@ -21,22 +56,33 @@ if(!window.extractor) {
 
             // TODO: Deal with the scroll position here and store it inside the Beam packet
 
-            chrome.runtime.sendMessage({ 
+            var dictionary = {
                 'kind'  : 'extracted', 
-                'url'   : url
-            });
+                'url'   : url,
+                'title' : document.title          
+            };
+
+            if(payload != undefined) {
+
+                dictionary['counter'] = this.counter;
+                dictionary['payload'] = payload;
+            }
+
+            chrome.runtime.sendMessage(dictionary);
         }
       };
 
-      window.extractor = Extractor;
+      window.beamExtractor = BeamExtractor;
 
     })(window);
+
+    beamExtractor.initialize();
 
     chrome.runtime.onMessage.addListener(function(message, sender, sendResponse) {
 
         if (message.type == 'extract') {
 
-            extractor.extract();
+            beamExtractor.extract(message.payload);
             return true;
         }
 
