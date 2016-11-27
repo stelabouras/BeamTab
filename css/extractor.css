@@ -1,0 +1,118 @@
+.bt-injected-message-bg
+{
+	font : normal;
+	font-family : inherit;
+	font-size : medium;
+	font-style : normal;
+	font-variant : normal;
+	font-weight : normal;
+	letter-spacing : normal;
+	line-height : normal;
+	list-style : none;
+	list-style-image : none;
+	list-style-position : outside;
+	list-style-type : disc;
+	transition: opacity .2s ease-in;
+	position: fixed !important;
+	top: 0;
+	left: 0;
+	bottom: 0;
+	right: 0;
+	z-index: 2000000000;
+	max-width: 100% !important;
+}
+.bt-injected-message-bg *,
+.bt-injected-message-bg :after,
+.bt-injected-message-bg :before {
+	box-sizing: content-box;
+}
+.bt-injected-message-bg * {
+	font : normal;
+	font-family : inherit;
+	font-size : medium;
+	font-style : normal;
+	font-variant : normal;
+	font-weight : normal;
+	letter-spacing : normal;
+	line-height : normal;
+	list-style : none;
+	list-style-image : none;
+	list-style-position : outside;
+	list-style-type : disc;
+}
+.bt-injected-message-bg ::selection {
+	color: #fff;
+	background-color: #5D00FF;
+}
+.bt-injected-message-bg .bt-injected-overlay {
+	width: 340px;
+	background: #fff;
+	position: absolute;
+	top: 0;
+	left: 50%;
+	animation: bt-injected-appear-rotate .75s;
+	transform: translate3d(-50%, 0, 0);
+	box-shadow: 0 2px 2px 0 rgba(0, 0, 0, 0.14),
+                  0 1px 5px 0 rgba(0, 0, 0, 0.12),
+                  0 3px 1px -2px rgba(0, 0, 0, 0.2);
+}
+.bt-injected-message-bg .bt-injected-overlay ul {
+	padding: 5px 0;
+	margin: 0;
+}
+.bt-injected-message-bg .bt-injected-overlay li {
+	list-style: none;
+}
+.bt-injected-message-bg .bt-injected-overlay div {
+	position: relative; 
+	padding: 10px; 
+	background: #5D00FF;
+	font-size: 14px; 
+	font-family: Roboto; 
+	color: #fff; 
+	text-align: left;
+}
+.bt-injected-message-bg .bt-injected-overlay div a {
+	color: #fff;
+    fill: currentColor;
+	display: block;
+	width: 15px;
+	height: 15px;
+	position: absolute;
+	cursor: pointer;
+	padding: 5px;
+	top: 7px;
+	right: 7px;
+	border-radius: 15px;
+}
+.bt-injected-message-bg .bt-injected-overlay div a:hover {
+	background: rgba(0, 0, 0, .25);
+	text-decoration: none;
+}
+.bt-injected-message-bg .bt-injected-device a {
+	display: block;
+    padding: 12px 10px;
+    color: rgba(0, 0, 0, 0.87);
+    text-transform: capitalize;
+    font-size: 12px;
+    font-family: Roboto, Noto, sans-serif;
+}
+.bt-injected-message-bg .bt-injected-device a:hover {
+	background: rgb(238, 238, 238);
+	text-decoration: none;
+    color: rgba(0, 0, 0, 0.87);
+}
+.bt-noscroll {
+  overflow: hidden;
+}
+
+@keyframes bt-injected-appear-rotate {
+  0% {
+  	opacity: 0;
+  	transform: translate3d(-50%, -50%,0) rotate3d(1,0,0, 100deg) translate3d(0, 50%,0);
+  }
+  100% {
+  	opacity: 1;
+  	transform: translate3d(-50%, -50%,0) rotate3d(1,0,0, 0deg) translate3d(0, 50%,0);
+  }
+}

@@ -1,0 +1,54 @@
+<!doctype html>
+<html>
+  <head>
+    <meta charset="utf-8"/>
+    <title>BeamTab | Options</title>
+    <link rel="stylesheet" type="text/css" href="../css/options.css">
+  </head>
+  <body class="page-option">
+
+    <article>
+
+        <h1>BeamTab Options</h1>
+
+        <section class="local-device">
+          <p>This device's name: <input type="text" id="local-device-name" value=""/></p>
+        </section>
+
+        <section>
+          <h5>Devices</h5>
+          <ul id="devices">
+            <li>&hellip;</li>
+          </ul>
+        </section>
+
+        <section>
+          <h5>Options</h5>
+          <ul>
+            <li class="clearfix">
+              <label for="show-notifications">Show notifications upon beaming</label>
+              <em class="option"><input id="show-notifications" type="checkbox"/></em>
+            </li>
+            <li class="clearfix">
+              <label for="show-badge">Show badge with total devices' number</label>
+              <em class="option"><input id="show-badge" type="checkbox"/></em>
+            </li>
+          </ul>
+        </section>
+
+        <section>
+          <h5>Keyboard Shortcuts</h5>
+          <ul>
+            <li class="clearfix">
+              <span>Beam tab</span>
+              <em class="key" id="beamtab-key">&hellip;</em>
+            </li>
+          </ul>
+        </section>
+
+    </article>
+
+    <script src="../js/options.js"></script>
+
+  </body>
+</html>
