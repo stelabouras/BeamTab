@@ -9,7 +9,7 @@ BeamTab autogenerates the name of your devices using silly name but you can chan
 
 ## Major thanks
 
-* [Stavros Korokythakis]() for his amazing queue service
+* [Stavros Korokythakis](https://www.stavros.io) for his amazing [message queue service](https://github.com/skorokithakis/gweet/).
 
 
 ## Todo / Future
