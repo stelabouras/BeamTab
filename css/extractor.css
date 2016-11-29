@@ -63,6 +63,14 @@
 .bt-injected-message-bg .bt-injected-overlay li {
 	list-style: none;
 }
+.bt-injected-message-bg .bt-injected-overlay li.no-devices {
+	padding: 12px 10px;
+    padding: 12px 10px;
+    color: rgba(0, 0, 0, 0.5);
+    font-size: 12px;
+    font-family: Roboto, Noto, sans-serif;
+    text-align: center;
+}
 .bt-injected-message-bg .bt-injected-overlay div {
 	position: relative; 
 	padding: 10px; 

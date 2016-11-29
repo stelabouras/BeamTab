@@ -315,9 +315,9 @@
         'payload': pushPacket        
       });
 
-      chrome.storage.sync.get('show-notifications', (objects) => {
+      chrome.storage.sync.get('suppress-notifications', (objects) => {
 
-          if(objects['show-notifications'] === true) {
+          if(objects['suppress-notifications'] !== true) {
 
             chrome.notifications.create('', {
               'type'            : 'basic',
@@ -402,11 +402,6 @@ chrome.browserAction.onClicked.addListener(function() {
       if(!tabs[0].url)
         return;
 
-      // Do nothing if this is the only
-      // registered device
-      if(BeamTab.deviceList.length <= 1)
-        return;
-
       chrome.tabs.executeScript(null, {
         file: "js/extractor.js",
         runAt: "document_end"
@@ -415,20 +410,8 @@ chrome.browserAction.onClicked.addListener(function() {
         if (chrome.runtime.lastError)
           return;
 
-        var singleRecipient = (BeamTab.deviceList.length == 2);
-        var recipient = undefined;
-
-        if(singleRecipient)
-          recipient = BeamTab.getOtherDevicesList()[0];
-
         chrome.tabs.sendMessage(tabs[0].id, { 
-
-          // Push the page immediately if we have only one
-          // other registered device, otherwise present selector
-
-          'type': (singleRecipient ? 'extract' : 'selector'),
-          'recipient': recipient
-
+          'type': 'selector'
         }, () => {
 
           if(chrome.runtime.lastError)
@@ -440,6 +423,11 @@ chrome.browserAction.onClicked.addListener(function() {
       chrome.tabs.insertCSS(null, {
         file: "css/extractor.css",
         runAt: "document_end"
+      }, function() {
+
+        if(chrome.runtime.lastError)
+          return;
+
       });
   });
 });

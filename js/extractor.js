@@ -83,6 +83,14 @@ if(!window.beamExtractor) {
 
             chrome.runtime.sendMessage({ 'kind': 'other_devices'}, (otherDevices) => {
 
+                if(otherDevices.length == 0) {
+
+                    var li = document.createElement('li');
+                    li.className = 'bt-injected-device no-devices';
+                    li.innerHTML = 'No devices found!';
+                    ul.appendChild(li);
+                }
+
                 otherDevices.forEach((deviceName) => {
 
                     var li = document.createElement('li');
@@ -145,15 +153,7 @@ if(!window.beamExtractor) {
 
     chrome.runtime.onMessage.addListener(function(message, sender, sendResponse) {
 
-        if (message.type == 'extract') {
-
-            beamExtractor.extract(message.recipient);
-
-            sendResponse();
-
-            return true;
-        }
-        else if(message.type == 'selector') {
+        if(message.type == 'selector') {
 
             beamExtractor.presentSelector();
 
