@@ -21,7 +21,6 @@
 
           var localDeviceName = this.getLocalDeviceName();
 
-            // TODO: Let users change the name from within options
           if(!localDeviceName)
             localDeviceName = this.generateDeviceName();
 
