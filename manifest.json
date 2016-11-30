@@ -34,5 +34,5 @@
       "js": ["js/extractor.js"],
       "css": ["css/extractor.css"]
     }],
-   "version": "0.2"
+   "version": "0.3"
 }

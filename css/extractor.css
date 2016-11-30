@@ -1,7 +1,7 @@
 .bt-injected-message-bg
 {
 	font : normal;
-	font-family : inherit;
+    font-family: Roboto, Noto, Arial, sans-serif !important;
 	font-size : medium;
 	font-style : normal;
 	font-variant : normal;
@@ -28,7 +28,7 @@
 }
 .bt-injected-message-bg * {
 	font : normal;
-	font-family : inherit;
+    font-family: Roboto, Noto, Arial, sans-serif !important;
 	font-size : medium;
 	font-style : normal;
 	font-variant : normal;
@@ -68,7 +68,7 @@
     padding: 12px 10px;
     color: rgba(0, 0, 0, 0.5);
     font-size: 12px;
-    font-family: Roboto, Noto, sans-serif;
+    font-family: Roboto, Noto, Arial, sans-serif !important;
     text-align: center;
 }
 .bt-injected-message-bg .bt-injected-overlay div {
@@ -76,7 +76,7 @@
 	padding: 10px; 
 	background: #5D00FF;
 	font-size: 14px; 
-	font-family: Roboto; 
+    font-family: Roboto, Noto, Arial, sans-serif !important;
 	color: #fff; 
 	text-align: left;
 }
@@ -98,12 +98,14 @@
 	text-decoration: none;
 }
 .bt-injected-message-bg .bt-injected-device a {
+	text-decoration: none;
 	display: block;
     padding: 12px 10px;
     color: rgba(0, 0, 0, 0.87);
     text-transform: capitalize;
     font-size: 12px;
-    font-family: Roboto, Noto, sans-serif;
+    text-align: left;
+    font-family: Roboto, Noto, Arial, sans-serif !important;
 }
 .bt-injected-message-bg .bt-injected-device a:hover {
 	background: rgb(238, 238, 238);
