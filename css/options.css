@@ -18,6 +18,7 @@ h1 {
 	border-bottom: 2px solid rgba(255, 255, 255, .25);
 }
 input[type="text"] {
+    text-transform: capitalize;
 	background: rgba(255, 255, 255, .1);
 	padding: 2px 5px;
 	border: none;
@@ -43,6 +44,9 @@ ul {
 li {
 	list-style: none;
 	margin-bottom: 10px;
+}
+#devices li {
+	text-transform: capitalize;
 }
 li .remove {
 	display: inline-block;

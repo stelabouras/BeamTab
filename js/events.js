@@ -274,12 +274,17 @@
       }, 1000);
     },
 
-    sendChunkedRequest : function(object) {
+    sendChunkedRequest : function(object, successCallback) {
 
       var urlEncoded = encodeURIComponent(JSON.stringify(object));
 
       var xhr = new XMLHttpRequest();
       xhr.open("POST", this.queueService + this.channelId + "/?json=" + urlEncoded, true);
+      xhr.onreadystatechange = (event) => {
+
+        if(successCallback && event.target.readyState == 4 && event.target.status == 200)
+          successCallback();
+      };
       xhr.send();
     },
 
@@ -299,7 +304,7 @@
       chrome.tabs.create({ 'url' : pushPacket['url'] });                
     },
 
-    sendPushPacket : function(url, recipient) {
+    sendPushPacket : function(url, recipient, originatedFromContextMenu) {
 
       if(!url)
         return;
@@ -315,24 +320,30 @@
       this.sendChunkedRequest({
         'type' : 'pushPacket',
         'payload': pushPacket        
+      }, () => {
+
+        chrome.storage.sync.get('suppress-notifications', (objects) => {
+
+            if(objects['suppress-notifications'] !== true) {
+
+              chrome.notifications.create('', {
+                'type'            : 'basic',
+                'title'           : 'BeamTab',
+                'message'         : 'Hey ' + this.capitalize(this.getLocalDeviceName()) + ', your ' + (originatedFromContextMenu ? 'link' : 'tab') + ' was beamed to ' + this.capitalize(recipient) + '!',
+                'iconUrl'         : '../icons/icon-128.png',
+                'buttons'         : [{
+                                      'title'   : 'Dismiss',
+                                      'iconUrl' : '../icons/action_cancel.png'
+                                    }]
+              });
+            }
+        });
+
       });
+    },
 
-      chrome.storage.sync.get('suppress-notifications', (objects) => {
-
-          if(objects['suppress-notifications'] !== true) {
-
-            chrome.notifications.create('', {
-              'type'            : 'basic',
-              'title'           : 'BeamTab',
-              'message'         : 'Hey ' + this.getLocalDeviceName() + ', your tab was beamed to ' + recipient + '!',
-              'iconUrl'         : '../icons/icon-128.png',
-              'buttons'         : [{
-                                    'title'   : 'Dismiss',
-                                    'iconUrl' : '../icons/action_cancel.png'
-                                  }]
-            });
-          }
-      });
+    capitalize: function(str) {
+      return str.toLowerCase().replace( /(^|\s)([a-z])/g , function(m,p1,p2){ return p1+p2.toUpperCase(); } );
     },
 
     updateContextMenus : function() {
@@ -385,7 +396,7 @@
       if(url == undefined)
         return;
 
-      this.sendPushPacket(url, recipient);
+      this.sendPushPacket(url, recipient, true);
     }
   };
 
@@ -399,7 +410,7 @@ chrome.extension.onMessage.addListener(function(request, sender, sendResponse) {
 
   if(request.kind == 'extracted') {
 
-    BeamTab.sendPushPacket(request.url, request.recipient);
+    BeamTab.sendPushPacket(request.url, request.recipient, false);
 
     sendResponse();
             
