@@ -14,11 +14,9 @@ Do you want to try it on your Chrome browser? [Give it a spin](https://chrome.go
 
 ## Major thanks
 
-* [Stavros Korokythakis](https://www.stavros.io) for his amazing [message queue service](https://github.com/skorokithakis/gweet/).
-
+* [Stavros Korokythakis](https://github.com/skorokithakis/) for his amazing [message queue service](https://github.com/skorokithakis/gweet/).
+* [Petros Douvantzis](https://github.com/petrakeas/) for QA-ing the whole thing.
 
 ## Todo
 
-* Add context menu integration
-* Also send the scroll position
-* Select recipient from selector using only the keyboard (up / down / enter)
+* Add keyboard shortcuts for selecting a device to beam the tab to (up / down / enter)

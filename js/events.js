@@ -33,6 +33,8 @@
           chrome.browserAction.setBadgeBackgroundColor({ 'color' : '#5D00FF' });
 
           this.updateBadge();
+
+          this.updateContextMenus();
         });
     },
 
@@ -331,6 +333,59 @@
             });
           }
       });
+    },
+
+    updateContextMenus : function() {
+
+      chrome.contextMenus.removeAll();
+
+      var contexts = ["link", "page"];
+
+      chrome.contextMenus.create({
+        'title': 'Beam to...',
+        'id': 'parent',
+        'contexts': contexts
+      });
+
+      var otherDevicesList = this.getOtherDevicesList();
+
+      if(otherDevicesList.length == 0) {
+
+        chrome.contextMenus.create({
+          'title': 'No devices found',
+          'contexts': contexts,
+          'parentId': 'parent',
+          'onclick': (info, tab) => { this.contextMenusClickHandler(info, undefined); }
+        });
+      }
+
+      otherDevicesList.forEach((deviceName) => {
+
+        chrome.contextMenus.create({
+          'title': deviceName,
+          'contexts': contexts,
+          'parentId': 'parent',
+          'onclick': (info, tab) => { this.contextMenusClickHandler(info, deviceName); }
+        });
+      });
+    },
+
+    contextMenusClickHandler : function(reference, recipient) {
+
+      if(recipient == undefined)
+        return;
+
+      var url = undefined;
+
+      if(reference.linkUrl)
+        url = reference.linkUrl;
+      else if(reference.pageUrl)
+        url = reference.pageUrl;
+
+      if(url == undefined)
+        return;
+
+      this.sendPushPacket(url, recipient);
     }
   };
 
@@ -370,8 +425,14 @@ chrome.storage.onChanged.addListener(function (changes, namespace) {
   
   for(key in changes) {
 
-    if(key == 'deviceList')
-      BeamTab.syncRemoteDeviceList(BeamTab.changeDeviceCallback);
+    if(key == 'deviceList') {
+
+      BeamTab.syncRemoteDeviceList(() => {
+
+        BeamTab.changeDeviceCallback();
+        BeamTab.updateContextMenus();
+      });
+    }
     else if(key == 'channelId')
       BeamTab.channelId = changes[key].newValue;
   }
