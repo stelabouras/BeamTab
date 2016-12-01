@@ -28,6 +28,8 @@
 
           this.updateChannelId();
 
+          this.checkForUndeliveredPackets();
+
           this.setupChunkedListener();
 
           chrome.browserAction.setBadgeBackgroundColor({ 'color' : '#5D00FF' });
@@ -223,6 +225,9 @@
 
     setupChunkedListener : function() {
 
+      if(this.channelId == undefined)
+        return;
+
       var offset = 0,
         token = '\n',
         onChunk = (finalChunk) => {
@@ -257,9 +262,11 @@
 
       this.xhr = new XMLHttpRequest();
       this.xhr.open("GET", this.queueService + this.channelId + "/?streaming=1", true);
-      this.xhr.onprogress =  () => {  onChunk();  };
-      this.xhr.onload = () => {  onChunk(true); };
-      this.xhr.onerror = (error) => { this.retryChunckedConnection(); };
+      this.xhr.onprogress =  () => { console.log('onprogress'); onChunk();  };
+      this.xhr.onabort = () => { console.log('onabort'); };
+      this.xhr.onloadend = () => { console.log('onloadend'); };
+      this.xhr.onload = () => { console.log('onload'); onChunk(true); };
+      this.xhr.onerror = (error) => { console.log('onerror'); this.retryChunckedConnection(); };
       this.xhr.send();
     },
 
@@ -268,6 +275,8 @@
       this.xhr.abort();
 
       setTimeout(() => {
+
+        this.checkForUndeliveredPackets();
 
         this.setupChunkedListener();
 
@@ -290,16 +299,62 @@
 
     parseChunkedResponse : function(chunk) {
 
-      var response = JSON.parse(JSON.parse(chunk).values.json[0]);
+      var chunkObj = JSON.parse(chunk);
+      var response = JSON.parse(chunkObj.values.json[0]);
 
       if(response.type == 'pushPacket')
-        this.consumePushPacket(response.payload);
+        this.consumePushPacket(response.payload, chunkObj.created);
     },
 
-    consumePushPacket : function(pushPacket) {
+    checkForUndeliveredPackets : function() {
+
+      if(localStorage.lastConsumedMessageTS == undefined)
+        return;
+
+      var xhr = new XMLHttpRequest();
+      xhr.open("GET", this.queueService + this.channelId + "/", true);
+      xhr.onreadystatechange = (event) => {
+
+        if(event.target.readyState == 4 && event.target.status == 200) {
+
+          var responseText = event.target.responseText;
+
+          if(responseText == undefined)
+            return;
+
+          var responseJSON = JSON.parse(responseText);
+
+          if(responseJSON.messages == undefined)
+            return;
+
+          if(responseJSON.messages.length == 0)
+            return;
+
+          var lastConsumedMessageDT = new Date(localStorage.lastConsumedMessageTS);
+
+          responseJSON.messages.forEach((object) => {
+
+            var createdDt = new Date(object.created);
+
+            if(createdDt <= lastConsumedMessageDT)
+              return;
+
+            var pushPacket = JSON.parse(object.values.json[0]);
+
+            this.consumePushPacket(pushPacket.payload, object.created);
+          });
+        }
+      };
+      xhr.send();
+    },
+
+    consumePushPacket : function(pushPacket, created) {
 
       if(pushPacket['recipient'] != this.getLocalDeviceName())
         return;
+
+      if(created)
+        localStorage.lastConsumedMessageTS = created; 
 
       chrome.tabs.create({ 'url' : pushPacket['url'] });                
     },
@@ -406,6 +461,12 @@
 
 BeamTab.initialize();
 
+chrome.idle.onStateChanged.addListener(function(state) {
+
+  if(state == 'active')
+    BeamTab.retryChunckedConnection();
+});
+
 chrome.extension.onMessage.addListener(function(request, sender, sendResponse) {
 
   if(request.kind == 'extracted') {
@@ -440,7 +501,9 @@ chrome.storage.onChanged.addListener(function (changes, namespace) {
 
       BeamTab.syncRemoteDeviceList(() => {
 
-        BeamTab.changeDeviceCallback();
+        if(BeamTab.changeDeviceCallback)
+          BeamTab.changeDeviceCallback();
+
         BeamTab.updateContextMenus();
       });
     }
