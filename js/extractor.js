@@ -37,10 +37,6 @@ if(!window.beamExtractor) {
 
             this.isShown = true;
 
-            var body = document.body;
-            this.documentClass = body.className;
-            body.className = body.className + " bt-noscroll";
-
             document.addEventListener('keyup', this.keyboardShortcuts.bind(this), false);
 
             this.messageBG = document.createElement('div');
@@ -55,67 +51,70 @@ if(!window.beamExtractor) {
 
             document.body.insertBefore(this.messageBG, document.body.firstChild);
 
-            this.overlay = document.createElement('div');
-            this.overlay.className = 'bt-injected-overlay';
-            this.overlay.addEventListener('click', function(event) {
+            const shadowRoot = this.messageBG.attachShadow({mode: 'open'});
 
-                event.stopPropagation();
-                
-            }, false);
+            var stylesheet = document.createElement('link');
+            stylesheet.setAttribute('rel', 'stylesheet');
+            stylesheet.setAttribute('href', chrome.extension.getURL('css/extractor.css'));
+            stylesheet.onload = () => {
 
-            this.messageBG.appendChild(this.overlay); 
+                this.overlay = document.createElement('div');
+                this.overlay.className = 'bt-injected-overlay';
+                this.overlay.addEventListener('click', (event) => { event.stopPropagation(); }, false);
 
-            this.overlayHeader = document.createElement('div');
-            this.overlayHeader.innerHTML = 'Send tab to';
-            this.overlay.appendChild(this.overlayHeader);
+                shadowRoot.appendChild(this.overlay); 
 
-            var closeOverlay = document.createElement('a');
-            closeOverlay.innerHTML = '<svg viewBox="0 0 24 24" preserveAspectRatio="xMidYMid meet" style="pointer-events: none; display: block; width: 100%; height: 100%;"><g><path d="M19 6.41L17.59 5 12 10.59 6.41 5 5 6.41 10.59 12 5 17.59 6.41 19 12 13.41 17.59 19 19 17.59 13.41 12z"></path></g></svg>';
-            closeOverlay.addEventListener('click', () => {
+                this.overlayHeader = document.createElement('div');
+                this.overlayHeader.innerHTML = 'Beam tab to';
+                this.overlay.appendChild(this.overlayHeader);
 
-                this.hideSelector();
-            }, false);
-            this.overlayHeader.appendChild(closeOverlay);
+                var closeOverlay = document.createElement('a');
+                closeOverlay.innerHTML = '<svg viewBox="0 0 24 24" preserveAspectRatio="xMidYMid meet" style="pointer-events: none; display: block; width: 100%; height: 100%;"><g><path d="M19 6.41L17.59 5 12 10.59 6.41 5 5 6.41 10.59 12 5 17.59 6.41 19 12 13.41 17.59 19 19 17.59 13.41 12z"></path></g></svg>';
+                closeOverlay.addEventListener('click', () => { this.hideSelector(); }, false);
+                this.overlayHeader.appendChild(closeOverlay);
 
 
-            var ul = document.createElement('ul');
-            var self = this;
+                var ul = document.createElement('ul');
+                var self = this;
 
-            chrome.runtime.sendMessage({ 'kind': 'other_devices'}, (otherDevices) => {
+                chrome.runtime.sendMessage({ 'kind': 'other_devices'}, (otherDevices) => {
 
-                if(otherDevices.length == 0) {
+                    if(otherDevices.length == 0) {
 
-                    var li = document.createElement('li');
-                    li.className = 'bt-injected-device no-devices';
-                    li.innerHTML = 'No devices found!';
-                    ul.appendChild(li);
-                }
+                        var li = document.createElement('li');
+                        li.className = 'bt-injected-device no-devices';
+                        li.innerHTML = 'No devices found!';
+                        ul.appendChild(li);
+                    }
 
-                otherDevices.forEach((deviceName) => {
+                    otherDevices.forEach((deviceName) => {
 
-                    var li = document.createElement('li');
-                    li.className = 'bt-injected-device';
+                        var li = document.createElement('li');
+                        li.className = 'bt-injected-device';
 
-                    var a = document.createElement('a');
-                    a.setAttribute('style', 'cursor:pointer;');
-                    a.setAttribute('data-recipient', deviceName);
-                    a.textContent = deviceName;
-                    a.addEventListener('click', function() {
+                        var a = document.createElement('a');
+                        a.setAttribute('style', 'cursor:pointer;');
+                        a.setAttribute('data-recipient', deviceName);
+                        a.textContent = deviceName;
+                        a.addEventListener('click', function() {
 
-                        var recipient = this.getAttribute('data-recipient');
-                      
-                        self.extract(recipient);
+                            var recipient = this.getAttribute('data-recipient');
+                          
+                            self.extract(recipient);
 
-                        self.hideSelector();
+                            self.hideSelector();
 
-                    }, false);
-                    li.appendChild(a);
+                        }, false);
+                        li.appendChild(a);
 
-                    ul.appendChild(li);
+                        ul.appendChild(li);
+                    });
                 });
-            });
 
-            this.overlay.appendChild(ul);
+                this.overlay.appendChild(ul);
+            };
+
+            shadowRoot.appendChild(stylesheet);
         },
 
         hideSelector : function() {
@@ -128,7 +127,6 @@ if(!window.beamExtractor) {
             document.removeEventListener('keyup', this.keyboardShortcuts.bind(this), false);
 
             document.body.removeChild(this.messageBG);
-            document.body.className = this.documentClass;
         },
 
         keyboardShortcuts : function(event) {

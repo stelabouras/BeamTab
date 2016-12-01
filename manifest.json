@@ -18,6 +18,9 @@
       }
     }
   },
+  "web_accessible_resources": [
+    "css/extractor.css"
+  ],
    "options_page": "html/options.html",
    "description": "Beam your current tab to your other Chrome browsers.",
    "homepage_url": "http://stelabouras.com",
@@ -34,5 +37,5 @@
       "js": ["js/extractor.js"],
       "css": ["css/extractor.css"]
     }],
-   "version": "0.3"
+   "version": "0.4"
 }
