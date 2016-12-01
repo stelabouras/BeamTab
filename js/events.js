@@ -306,9 +306,6 @@
 
     checkForUndeliveredPackets : function() {
 
-      if(localStorage.lastConsumedMessageTS == undefined)
-        return;
-
       var xhr = new XMLHttpRequest();
       xhr.open("GET", this.queueService + this.channelId + "/?latest=20", true);
       xhr.onreadystatechange = (event) => {
@@ -334,7 +331,7 @@
 
             var createdDt = new Date(object.created);
 
-            if(createdDt <= lastConsumedMessageDT)
+            if(localStorage.lastConsumedMessageTS != undefined && createdDt <= lastConsumedMessageDT)
               return;
 
             var pushPacket = JSON.parse(object.values.json[0]);
