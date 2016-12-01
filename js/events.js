@@ -262,11 +262,9 @@
 
       this.xhr = new XMLHttpRequest();
       this.xhr.open("GET", this.queueService + this.channelId + "/?streaming=1", true);
-      this.xhr.onprogress =  () => { console.log('onprogress'); onChunk();  };
-      this.xhr.onabort = () => { console.log('onabort'); };
-      this.xhr.onloadend = () => { console.log('onloadend'); };
-      this.xhr.onload = () => { console.log('onload'); onChunk(true); };
-      this.xhr.onerror = (error) => { console.log('onerror'); this.retryChunckedConnection(); };
+      this.xhr.onprogress =  () => { onChunk();  };
+      this.xhr.onload = () => { onChunk(true); };
+      this.xhr.onerror = (error) => { this.retryChunckedConnection(); };
       this.xhr.send();
     },
 
@@ -312,7 +310,7 @@
         return;
 
       var xhr = new XMLHttpRequest();
-      xhr.open("GET", this.queueService + this.channelId + "/", true);
+      xhr.open("GET", this.queueService + this.channelId + "/?latest=20", true);
       xhr.onreadystatechange = (event) => {
 
         if(event.target.readyState == 4 && event.target.status == 200) {
