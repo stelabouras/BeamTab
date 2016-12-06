@@ -15,16 +15,22 @@ if(!window.beamExtractor) {
 
             if(youtubeMatches) {
 
-                var currentTimestamp = parseInt(document.querySelectorAll('[aria-label="Seek slider"]')[0].getAttribute('aria-valuenow'));
+                var youtubeUrl = document.querySelector('link[rel="canonical"]').getAttribute('href');
+                var currentTimestamp = parseInt(document.querySelector('[aria-label="Seek slider"]').getAttribute('aria-valuenow'));
 
-                if(currentTimestamp)
-                    url += '&t=' + currentTimestamp;
+                if(youtubeUrl) {
+
+                    url = youtubeUrl;
+
+                    if(currentTimestamp)
+                        url += '?t=' + currentTimestamp;
+                }
             }
 
             var dictionary = {
-                'kind'  : 'extracted', 
-                'url'   : url,
-                'recipient': recipient       
+                'kind'      : 'extracted', 
+                'url'       : url,
+                'recipient' : recipient       
             };
 
             chrome.runtime.sendMessage(dictionary);
@@ -65,7 +71,7 @@ if(!window.beamExtractor) {
                 shadowRoot.appendChild(this.overlay); 
 
                 this.overlayHeader = document.createElement('div');
-                this.overlayHeader.innerHTML = 'Beam tab to';
+                this.overlayHeader.innerHTML = 'Beam to';
                 this.overlay.appendChild(this.overlayHeader);
 
                 var closeOverlay = document.createElement('a');
@@ -83,7 +89,7 @@ if(!window.beamExtractor) {
 
                         var li = document.createElement('li');
                         li.className = 'bt-injected-device no-devices';
-                        li.innerHTML = 'No devices found!';
+                        li.innerHTML = 'No devices found.';
                         ul.appendChild(li);
                     }
 

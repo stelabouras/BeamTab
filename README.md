@@ -20,3 +20,4 @@ Do you want to try it on your Chrome browser? [Give it a spin](https://chrome.go
 ## Todo
 
 * Add keyboard shortcuts for selecting a device to beam the tab to (up / down / enter)
+* Show offline status in selector overlay if remote device is offline
