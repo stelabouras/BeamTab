@@ -15,7 +15,7 @@ if(!window.beamExtractor) {
 
             if(youtubeMatches) {
 
-                var youtubeUrl = document.querySelector('link[rel="canonical"]').getAttribute('href');
+                var youtubeUrl = document.querySelector('link[rel="shortlink"]').getAttribute('href');
                 var currentTimestamp = parseInt(document.querySelector('[aria-label="Seek slider"]').getAttribute('aria-valuenow'));
 
                 if(youtubeUrl) {

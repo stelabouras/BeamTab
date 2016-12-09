@@ -354,7 +354,7 @@
       chrome.tabs.create({ 'url' : pushPacket['url'] });                
     },
 
-    sendPushPacket : function(url, recipient, originatedFromContextMenu) {
+    sendPushPacket : function(url, recipient, originatedFromContextMenu, tab) {
 
       if(!url)
         return;
@@ -371,6 +371,12 @@
         'type' : 'pushPacket',
         'payload': pushPacket        
       }, () => {
+
+        chrome.storage.sync.get('close-tab', (objects) => {
+
+          if(objects['close-tab'] === true)
+            chrome.tabs.remove(tab.id);
+        });
 
         chrome.storage.sync.get('suppress-notifications', (objects) => {
 
@@ -416,7 +422,6 @@
           'title': 'No devices found',
           'contexts': contexts,
           'parentId': 'parent',
-          'onclick': (info, tab) => { this.contextMenusClickHandler(info, undefined); }
         });
       }
 
@@ -426,12 +431,12 @@
           'title': deviceName,
           'contexts': contexts,
           'parentId': 'parent',
-          'onclick': (info, tab) => { this.contextMenusClickHandler(info, deviceName); }
+          'onclick': (info, tab) => { this.contextMenusClickHandler(info, deviceName, tab); }
         });
       });
     },
 
-    contextMenusClickHandler : function(reference, recipient) {
+    contextMenusClickHandler : function(reference, recipient, tab) {
 
       if(recipient == undefined)
         return;
@@ -446,7 +451,7 @@
       if(url == undefined)
         return;
 
-      this.sendPushPacket(url, recipient, true);
+      this.sendPushPacket(url, recipient, true, tab);
     }
   };
 
@@ -465,8 +470,8 @@ chrome.idle.onStateChanged.addListener(function(state) {
 chrome.extension.onMessage.addListener(function(request, sender, sendResponse) {
 
   if(request.kind == 'extracted') {
-
-    BeamTab.sendPushPacket(request.url, request.recipient, false);
+      
+    BeamTab.sendPushPacket(request.url, request.recipient, false, sender.tab);
 
     sendResponse();
             
