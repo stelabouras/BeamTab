@@ -20,10 +20,11 @@ if(!window.beamExtractor) {
 
                 if(youtubeUrl) {
 
+                    var hasQueryParts = (youtubeUrl.split(/\?/).length > 1);
                     url = youtubeUrl;
 
                     if(currentTimestamp)
-                        url += '?t=' + currentTimestamp;
+                        url += (hasQueryParts ? '&' : '?') + 't=' + currentTimestamp;
                 }
             }
 
