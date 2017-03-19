@@ -36,6 +36,15 @@ h5 {
 	padding: 5px 0;
 	margin-bottom: 10px;
 	border-bottom: 2px solid rgba(255,255,255,.2);
+	position: relative;
+}
+h5 em {
+	position: absolute;
+	right: 0;
+	bottom: 10px;
+}
+h5 em:hover {
+	background: rgba(0, 0, 0, .25);
 }
 ul {
 	margin: 0;
@@ -62,9 +71,11 @@ li .remove {
 li .remove:hover {
 	background: rgba(0, 0, 0, .25);
 }
+h5 em,
 li em:not(.option) {
 	background: rgba(0, 0, 0, .15);
 }
+h5 em,
 li em {
 	display: inline-block;
 	padding: 2px 5px;
@@ -74,6 +85,87 @@ li em {
 	margin-left: 10px;
 	float: right;
 }
+h5 em,
 #open-keyboardshortcuts {
+	font-weight: bold;
 	cursor: pointer;
+}
+
+#overlay {
+	display: none;
+	position: fixed;
+	top: 0;
+	left: 0;
+	right: 0;
+	bottom: 0;
+	background: rgba(0, 0, 0, 0.75);
+    z-index: 999;
+    font-family: Arial;
+}
+#overlay article {
+	width: auto;
+}
+#overlay div {
+    display: block;
+    width: 480px;
+    background: #5D00FF;
+    color: #ECF0F1;
+    position: absolute;
+    top: 50%;
+    left: 50%;
+    transform: translate3d(-50%,-50%,0);
+    padding: 20px;
+    text-align: center;
+}
+#overlay input {
+	padding: 5px;
+	border: none;
+	display: block;
+	width: 100%;
+	margin: 0 auto 20px;
+	font-size: 20px;
+	outline: none;
+	border-radius: 0;
+}
+#overlay h2 {
+	margin: 0;
+	border-bottom: 1px solid rgba(255,255,255,.5);
+	padding-bottom: 10px;
+}
+#overlay h5 {
+	font-size: 20px;
+	text-align: center;
+	margin-bottom: 30px;
+}
+#overlay p {
+	line-height: 1.5em;
+}
+#overlay h2,
+#overlay p,
+#overlay li {
+	margin-bottom: 20px;
+}
+#overlay ol {
+	margin: 0;
+	display: block;
+	padding-left: 20px;
+}
+#overlay #overlay-action { display: none; }
+#overlay .buttons {
+	text-align: center;
+}
+#overlay a {
+	border: 2px solid #ECF0F1;
+	padding: 10px;
+	display: inline-block;
+	width: 100px;
+	text-align: center;
+	text-decoration: none;
+	color: #ECF0F1;
+	transition: 0.25s ease-in;
+	cursor: pointer;
+}
+#overlay a:hover {
+	color: #5D00FF;
+	background-color: #ECF0F1;
 }

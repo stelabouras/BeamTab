@@ -10,31 +10,42 @@ if(!window.beamExtractor) {
 
             var url = document.location.href;
 
-            // Check if it is a Youtube url
-            var youtubeMatches = url.match(/watch\?v=([a-zA-Z0-9\-_]+)/);
+            var urlParts = url.replace(/(>|<)/gi,'').split(/(vi\/|v=|\/v\/|youtu\.be\/|\/embed\/|\&|\#)/);
 
-            if(youtubeMatches) {
+            if(urlParts == null)
+                return url;
 
-                var youtubeUrl = document.querySelector('link[rel="shortlink"]').getAttribute('href');
-                var currentTimestamp = parseInt(document.querySelector('[aria-label="Seek slider"]').getAttribute('aria-valuenow'));
+            if(urlParts.length < 3)
+                return url;
 
-                if(youtubeUrl) {
+            // Check if we are on the YouTube domain
+            var isYoutubeDomain = false;
 
-                    var hasQueryParts = (youtubeUrl.split(/\?/).length > 1);
-                    url = youtubeUrl;
+            if(urlParts[0].includes('youtube.com') || urlParts[0].includes('youtu.be'))
+                isYoutubeDomain = true;
+            else if(urlParts[1].includes('youtube.com') || urlParts[1].includes('youtu.be'))
+                isYoutubeDomain = true;
 
-                    if(currentTimestamp)
-                        url += (hasQueryParts ? '&' : '?') + 't=' + currentTimestamp;
-                }
-            }
+            if(!isYoutubeDomain)
+                return url;
 
-            var dictionary = {
-                'kind'      : 'extracted', 
-                'url'       : url,
-                'recipient' : recipient       
-            };
+            var playlistElement = document.querySelector('[data-list-title]');
 
-            chrome.runtime.sendMessage(dictionary);
+            if(playlistElement)
+                return url;
+
+            var videoId = document.querySelector('[data-video-id]').dataset.videoId;
+            var currentTimestamp = parseInt(document.querySelector('[aria-label="Seek slider"]').getAttribute('aria-valuenow'));
+
+            if(!videoId)
+                return url;
+
+            url = 'https://www.youtube.com/watch?v=' + videoId;
+
+            if(currentTimestamp)
+                url += '&t=' + currentTimestamp;
+
+            return url;
         },
 
         presentSelector : function() {
@@ -84,7 +95,7 @@ if(!window.beamExtractor) {
                 var ul = document.createElement('ul');
                 var self = this;
 
-                chrome.runtime.sendMessage({ 'kind': 'other_devices'}, (otherDevices) => {
+                chrome.runtime.sendMessage({ 'kind': 'other_devices_friends'}, (otherDevices) => {
 
                     if(otherDevices.length == 0) {
 
@@ -94,25 +105,48 @@ if(!window.beamExtractor) {
                         ul.appendChild(li);
                     }
 
-                    otherDevices.forEach((deviceName) => {
+                    otherDevices.forEach((device) => {
 
                         var li = document.createElement('li');
                         li.className = 'bt-injected-device';
 
                         var a = document.createElement('a');
                         a.setAttribute('style', 'cursor:pointer;');
-                        a.setAttribute('data-recipient', deviceName);
-                        a.textContent = deviceName;
+                        a.setAttribute('data-id', device.id);
+                        a.setAttribute('data-name', device.name);
+                        a.setAttribute('data-friend', device.friend);
+                        a.textContent = device.name;
                         a.addEventListener('click', function() {
 
-                            var recipient = this.getAttribute('data-recipient');
-                          
-                            self.extract(recipient);
+                            var id = this.getAttribute('data-id');
+                            var name = this.getAttribute('data-name');
+                            var isFriend = (this.getAttribute('data-friend') == "true");
+
+                            var recipient = {
+                              'id': id,
+                              'name': name,
+                              'friend': isFriend
+                            };
+
+                            var url = self.extract(recipient);
+
+                            chrome.runtime.sendMessage({
+                                'kind'      : 'extracted', 
+                                'url'       : url,
+                                'recipient' : recipient    
+                            });
 
                             self.hideSelector();
 
                         }, false);
                         li.appendChild(a);
+
+                        if(device.friend) {
+                            
+                            var em = document.createElement('em')
+                            em.textContent = 'Friend';
+                            a.appendChild(em);
+                        }
 
                         ul.appendChild(li);
                     });
