@@ -127,18 +127,42 @@
       chrome.storage.sync.set({ 'friendList': this.friendList }, function() { callback && callback(true); });
     },
 
-    getFriendLink : function(callback) {
+    getUsername : function(callback) {
 
       chrome.identity.getProfileUserInfo((userInfo) => {
 
-        if(!userInfo.email)
-          return;
+        if(!userInfo.email) {
 
-        if(userInfo.email == '')
+          callback && callback(null);
+          return;
+        }
+
+        if(userInfo.email == '') {
+
+          callback && callback(null);
+          return;
+        }
+
+        var username = userInfo.email.split(/@/)[0];
+
+        if(username == null) {
+
+          callback && callback(null);
+          return;
+        }
+
+        callback && callback(username);
+      });
+    },
+
+    getFriendLink : function(callback) {
+
+      this.getUsername((username) => {
+
+        if(username == null)
           return;
 
         var extensionId = chrome.runtime.id;
-        var username    = userInfo.email.split(/@/)[0];
 
         var link = 'chrome-extension://' + extensionId + '/html/options.html#invite=' + forge_sha256(this.channelId) + '|' + username;
 
@@ -534,21 +558,18 @@
 
       if(recipient.friend) {
 
-        chrome.identity.getProfileUserInfo((userInfo) => {
+        this.getUsername((username) => {
 
-          if(!userInfo.email)
+          if(username == null)
             return;
 
-          if(userInfo.email == '')
-            return;
-
-          pushPacket.name = userInfo.email.split(/@/)[0];
-
+          pushPacket.name = username;
 
           this.sendChunkedRequest(this.pushEndpoint, recipient.id, {
             'type' : 'pushPacket',
             'payload': pushPacket                
           }, callback);
+
         });
       }
       else

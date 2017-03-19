@@ -179,7 +179,7 @@ Options = new function() {
     if(hash.indexOf('#invite=') < 0)
       return;
 
-    var invite = hash.split(/invite=/)[1];
+    var invite = decodeURIComponent(hash.split(/invite=/)[1]);
 
     var friendId = invite.split(/\|/)[0];
     var friendName = invite.split(/\|/)[1];
