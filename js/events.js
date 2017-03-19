@@ -453,6 +453,62 @@
         this.consumePushPacket(response.payload, chunkObj.created);
     },
 
+    getFriendHistory : function(callback) {
+
+      console.log(123);
+
+      var xhr = new XMLHttpRequest();
+      xhr.open("GET", this.queueHost + this.streamEndpoint + this.channelId + "/?latest=50", true);
+      xhr.onreadystatechange = (event) => {
+
+        if(event.target.readyState == 4 && event.target.status == 200) {
+
+          var responseText = event.target.responseText;
+
+          if(responseText == undefined) {
+
+            callback && callback([]);
+            return;
+          }
+
+          var responseJSON = JSON.parse(responseText);
+
+          if(responseJSON.messages == undefined) {
+
+            callback && callback([]);
+            return;
+          }
+
+          console.log(responseJSON);
+
+          if(responseJSON.messages.length == 0) {
+
+            callback && callback([]);
+            return;
+          }
+
+          var friendMessages = [];
+
+          responseJSON.messages.forEach((object) => {
+
+            var message = JSON.parse(object.values.json[0]);
+
+            if(!message.payload.friend)
+              return;
+
+            friendMessages.push({
+              'name': message.payload.name,
+              'url': message.payload.url,
+              'ts': object.created
+            });
+          });
+
+          callback && callback(friendMessages);
+        }
+      };
+      xhr.send();
+    },
+
     checkForUndeliveredPackets : function() {
 
       var xhr = new XMLHttpRequest();
@@ -529,11 +585,14 @@
 
       var callback = () => {
 
-        chrome.storage.sync.get('close-tab', (objects) => {
+        if(!recipient.friend) {
 
-          if(objects['close-tab'] === true)
-            chrome.tabs.remove(tab.id);
-        });
+          chrome.storage.sync.get('close-tab', (objects) => {
+
+            if(objects['close-tab'] === true)
+              chrome.tabs.remove(tab.id);
+          });
+        }
 
         chrome.storage.sync.get('suppress-notifications', (objects) => {
 
@@ -586,6 +645,18 @@
     updateContextMenus : function() {
 
       chrome.contextMenus.removeAll();
+
+      chrome.contextMenus.create({
+        "title":"Beams from friends",
+        "contexts":["browser_action"],
+        "onclick":function(info, tab) {
+
+          var extensionId = chrome.runtime.id;
+          var url = 'chrome-extension://' + extensionId + '/html/history.html';
+
+          chrome.tabs.create({ 'url' : url });
+        }
+      });
 
       var contexts = ["link", "page"];
 
