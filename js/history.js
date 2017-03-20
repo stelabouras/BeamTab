@@ -23,7 +23,7 @@ History = new function() {
           var date = new Date(message.ts);
 
           html += '<li>';
-          html += '<a target="_blank" href="' + message.url + '">' + message.url + '</a>';
+          html += '<a target="_blank" href="' + message.url + '">' + decodeURIComponent(message.url) + '</a>';
           html += '<span>' + message.name + '</span>';
           html += '<em>' + this.timeDifference(date.getTime()) + '</em>';
           html += '</li>';
