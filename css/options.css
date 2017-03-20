@@ -174,13 +174,14 @@ h5 em,
 	padding: 20px 0;
 }
 #history li {
-	margin-bottom: 20px;
+	padding-bottom: 30px;
 }
 #history li a {
 	display: block;
 	color: #fff;
 	font-size: 16px;
 	margin-bottom: 10px;
+	word-wrap: break-word;
 }
 #history li span {
 	margin: 0;

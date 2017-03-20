@@ -455,8 +455,6 @@
 
     getFriendHistory : function(callback) {
 
-      console.log(123);
-
       var xhr = new XMLHttpRequest();
       xhr.open("GET", this.queueHost + this.streamEndpoint + this.channelId + "/?latest=50", true);
       xhr.onreadystatechange = (event) => {
@@ -478,8 +476,6 @@
             callback && callback([]);
             return;
           }
-
-          console.log(responseJSON);
 
           if(responseJSON.messages.length == 0) {
 
@@ -503,7 +499,7 @@
             });
           });
 
-          callback && callback(friendMessages);
+          callback && callback(friendMessages.reverse());
         }
       };
       xhr.send();
